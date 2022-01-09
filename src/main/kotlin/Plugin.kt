@@ -36,7 +36,7 @@ object Plugin : KotlinPlugin(
             //注意long型尾缀
             admin = bot.getFriend(12345689L)
         }
-
+        
         globalEventChannel().subscribeAlways<GroupMessageEvent>{
             //群消息
             //复读示例
@@ -78,51 +78,4 @@ object Plugin : KotlinPlugin(
            admin?.sendMessage("$invitorNick: $invitorId 在拉机器人进 $groupName($groupId)")
        }
     }
-}
-
-suspend fun reply(group: Group,qq: Long,msg: String){
-    //./表示相对路径
-    // /表示根目录
-    val id = group.id
-    val file = File("./data/reply/r$id.txt")
-
-    if(!file.exists()){
-        File("./data/reply").mkdirs()
-        file.createNewFile()
-        file.writeText("test§reply")
-    }
-
-    val lines = file.readLines()
-
-    for( line in lines ){
-        if (line.isEmpty()) return
-        val rawPair = line.split("\u00a7",limit = 2)
-        if (msg.contains(rawPair[0])) group.sendMessage(rawPair[1])
-    }
-
-}
-
-suspend fun setReply(group: Group, qq: Long, msg: String){
-    if (!msg.startsWith("/定义")) return
-    val id = group.id
-
-    val file = File("./data/reply/r$id.txt")
-
-    if(!file.exists()){
-        File("./data/reply").mkdirs()
-        file.createNewFile()
-        file.writeText("test§reply")
-    }
-
-    val rawStr = msg.split(" ",limit = 3)
-    if ( rawStr[1].contains("\n")){
-        group.sendMessage("关键词不可以包含回车✋")
-        return
-    }else if (rawStr.size == 2){
-        group.sendMessage("请使用正确定义格式")
-        return
-    }
-
-    file.appendText("\n${rawStr[1]}§${rawStr[2]}")
-    group.sendMessage("${rawStr[1]}的定义写入成功")
 }
