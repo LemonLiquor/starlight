@@ -14,13 +14,13 @@ object Guiwu : ExpendFeature() {
 
     override fun main(){
         bot.eventChannel.subscribeAlways<GroupMessageEvent> {
-            if (sender.id != 1837099861L ) return@subscribeAlways
+            if (sender.id != 123456789L ) return@subscribeAlways
             val msg = message.contentToString()
 
             /**
              * 当桂物消息中带回车，即超过一行，一般就是转发的烂活
              */
-            if (msg.contains("\n")) {
+            if (msg.contains("\n") || msg.length > 223) {
                 try {
                     message.recall()
                 }catch ( p : PermissionDeniedException){
