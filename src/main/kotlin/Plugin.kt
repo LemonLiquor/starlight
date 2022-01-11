@@ -25,6 +25,9 @@ object Plugin : KotlinPlugin(
     lateinit var instanceBot: Bot
     lateinit var admin: Contact
 
+    //管理员QQ号，单独拎出来便于修改
+    private val adminQQ = 123456789L
+
     override fun onEnable() {
         logger.info { "Plugin loaded" }
         //配置文件目录 "${dataFolder.absolutePath}/"
@@ -35,7 +38,7 @@ object Plugin : KotlinPlugin(
         globalEventChannel().subscribeOnce<BotOnlineEvent>{
             instanceBot = this.bot
             //注意long型尾缀
-            admin = bot.getFriend(1837099861L)!!
+            admin = bot.getFriend(adminQQ)!!
 
             launch { Guiwu.main() }
         }

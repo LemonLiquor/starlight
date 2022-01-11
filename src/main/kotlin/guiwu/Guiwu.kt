@@ -11,10 +11,11 @@ import zhu.moon.Plugin
  */
 object Guiwu : ExpendFeature() {
     private val bot = Plugin.instanceBot
+    private val guiwuQQ = 123456789L
 
     override fun main(){
         bot.eventChannel.subscribeAlways<GroupMessageEvent> {
-            if (sender.id != 123456789L ) return@subscribeAlways
+            if (sender.id != guiwuQQ ) return@subscribeAlways
             val msg = message.contentToString()
 
             /**
@@ -25,11 +26,13 @@ object Guiwu : ExpendFeature() {
                     message.recall()
                 }catch ( p : PermissionDeniedException){
                     group.sendMessage("没有撤回权限，请群主设置")
+                    return@subscribeAlways
                 }catch (i:IllegalStateException ){
                     group.sendMessage("这句话已经被撤回了，我就不管了")
-                }finally {
-                    group.sendMessage("$senderName 的桂物发言已撤回")
+                    return@subscribeAlways
                 }
+
+                group.sendMessage("$senderName 的桂物发言已撤回")
             }
 
         }
