@@ -1,19 +1,18 @@
 package zhu.moon
 
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Group
-import net.mamoe.mirai.event.events.BotInvitedJoinGroupRequestEvent
-import net.mamoe.mirai.event.events.FriendMessageEvent
-import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.event.events.NewFriendRequestEvent
+import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.info
+import zhu.moon.guiwu.Guiwu
 import java.io.File
 
 object Plugin : KotlinPlugin(
@@ -22,19 +21,23 @@ object Plugin : KotlinPlugin(
         version = "1.0-SNAPSHOT",
     )
 ) {
+    //非空属性必须在定义的时候初始化,kotlin提供了一种可以延迟初始化的方案,使用 lateinit 关键字描述属性
+    lateinit var instanceBot: Bot
+    lateinit var admin: Contact
+
     override fun onEnable() {
         logger.info { "Plugin loaded" }
         //配置文件目录 "${dataFolder.absolutePath}/"
 
-        //非空属性必须在定义的时候初始化,kotlin提供了一种可以延迟初始化的方案,使用 lateinit 关键字描述属性
-        lateinit val bot: Bot
-        lateinit admin: Contact
+
 
         //机器人一旦上线就给机器人实例 bot 和管理员 admin 赋值
         globalEventChannel().subscribeOnce<BotOnlineEvent>{
-            bot = this.bot
+            instanceBot = this.bot
             //注意long型尾缀
-            admin = bot.getFriend(12345689L)
+            admin = bot.getFriend(1837099861L)!!
+
+            launch { Guiwu.main() }
         }
         
         globalEventChannel().subscribeAlways<GroupMessageEvent>{
@@ -43,6 +46,7 @@ object Plugin : KotlinPlugin(
             if (message.contentToString().startsWith("复读")) {
                 group.sendMessage(message.contentToString().replace("复读", ""))
             }
+
             if (message.contentToString() == "hi") {
                 //群内发送
                 group.sendMessage("hi")
@@ -72,10 +76,10 @@ object Plugin : KotlinPlugin(
         }
 
        globalEventChannel().subscribeAlways<NewFriendRequestEvent> {
-           admin?.sendMessage("$fromNick: $fromId 在尝试添加机器人")
+           admin.sendMessage("$fromNick: $fromId 在尝试添加机器人")
        }
        globalEventChannel().subscribeAlways<BotInvitedJoinGroupRequestEvent>{
-           admin?.sendMessage("$invitorNick: $invitorId 在拉机器人进 $groupName($groupId)")
+           admin.sendMessage("$invitorNick: $invitorId 在拉机器人进 $groupName($groupId)")
        }
     }
 }
