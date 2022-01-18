@@ -13,3 +13,9 @@ repositories {
     maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
 }
+
+val gsonVersion = "2.8.9"
+
+dependencies {
+    implementation("com.google.code.gson:gson:$gsonVersion")
+}

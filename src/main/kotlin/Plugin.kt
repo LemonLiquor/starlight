@@ -13,6 +13,7 @@ import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.info
 import zhu.moon.guiwu.Guiwu
+import zhu.moon.reply.Reply
 import java.io.File
 
 object Plugin : KotlinPlugin(
@@ -26,7 +27,7 @@ object Plugin : KotlinPlugin(
     lateinit var admin: Contact
 
     //管理员QQ号，单独拎出来便于修改
-    private val adminQQ = 123456789L
+    private val adminQQ = 1837099861L
 
     override fun onEnable() {
         logger.info { "Plugin loaded" }
@@ -40,7 +41,8 @@ object Plugin : KotlinPlugin(
             //注意long型尾缀
             admin = bot.getFriend(adminQQ)!!
 
-            launch { Guiwu.main() }
+            Guiwu.start()
+            Reply.start()
         }
         
         globalEventChannel().subscribeAlways<GroupMessageEvent>{
