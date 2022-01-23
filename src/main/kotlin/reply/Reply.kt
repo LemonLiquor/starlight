@@ -50,9 +50,9 @@ object Reply : ExpendFeature(){
     private fun replyPairs(id: Long): Set<ReplyPair> {
         var text = ""
         try {
-            text = File("./data/reply/r$id.txt").readText()
+            text = File("./data/reply/r$id.json").readText()
         } catch (e: Exception) {
-            File("./data/reply/r$id.txt").createNewFile()
+            File("./data/reply/r$id.json").createNewFile()
             return emptySet()
         }
         val gson = Gson()
@@ -68,10 +68,10 @@ object Reply : ExpendFeature(){
         val gson = Gson()
         val text = gson.toJson(replys)
         try {
-            File("./data/reply/r$id.txt").writeText(text)
+            File("./data/reply/r$id.json").writeText(text)
         }catch (e :Exception){
-            File("./data/reply/r$id.txt").createNewFile()
-            File("./data/reply/r$id.txt").writeText(text)
+            File("./data/reply/r$id.json").createNewFile()
+            File("./data/reply/r$id.json").writeText(text)
         }
 
     }
@@ -80,5 +80,4 @@ object Reply : ExpendFeature(){
 data class ReplyPair(
     var keyWord : String = "test",
     var anwser: String = "reply",
-
 )

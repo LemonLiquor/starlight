@@ -1,17 +1,22 @@
 package zhu.moon.guiwu
 
+import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import zhu.moon.ExpendFeature
 import zhu.moon.Plugin
+import java.io.File
 
 /**
  * 用于撤回群里桂物发言
  */
 object Guiwu : ExpendFeature() {
     private val bot = Plugin.instanceBot
-    private val guiwuQQ = 123456789L
+    private val guiwuQQ = 1372782994L
+
+    private var msgCnt = 0
+    private var lastSenderId: Long = guiwuQQ
 
     override fun main(){
         bot.eventChannel.subscribeAlways<GroupMessageEvent> {
@@ -35,6 +40,24 @@ object Guiwu : ExpendFeature() {
                 group.sendMessage("$senderName 的桂物发言已撤回")
             }
 
+        }
+
+        bot.eventChannel.subscribeAlways<GroupMessageEvent> {
+            if (sender.id != lastSenderId) lastSenderId = sender.id
+
+            if (sender.id == guiwuQQ) {
+                if (sender.id == lastSenderId) {
+                    msgCnt += 1
+                    //group.sendMessage("已经连续发送${msgCnt}次")
+                }
+
+                if  (msgCnt == 3) {
+                    group.sendImage(File("./data/pic/guiwu_1.gif"))
+                    //group.sendMessage("感觉不是什么好东西")
+                }
+            }else{
+                msgCnt = 0
+            }
         }
     }
 
