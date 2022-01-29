@@ -19,7 +19,7 @@ import java.io.File
 object Plugin : KotlinPlugin(
     JvmPluginDescription(
         id = "zhu.moon.plugin",
-        version = "1.0-SNAPSHOT",
+        version = "0.1.2",
     )
 ) {
     //非空属性必须在定义的时候初始化,kotlin提供了一种可以延迟初始化的方案,使用 lateinit 关键字描述属性
