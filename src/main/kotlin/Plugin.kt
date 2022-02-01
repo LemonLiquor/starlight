@@ -19,7 +19,7 @@ import java.io.File
 object Plugin : KotlinPlugin(
     JvmPluginDescription(
         id = "zhu.moon.plugin",
-        version = "0.1.2",
+        version = "0.0.0",
     )
 ) {
     //非空属性必须在定义的时候初始化,kotlin提供了一种可以延迟初始化的方案,使用 lateinit 关键字描述属性
@@ -27,7 +27,7 @@ object Plugin : KotlinPlugin(
     lateinit var admin: Contact
 
     //管理员QQ号，单独拎出来便于修改
-    private val adminQQ = 1837099861L
+    val adminQQ = 783960732L
 
     override fun onEnable() {
         logger.info { "Plugin loaded" }

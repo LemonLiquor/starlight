@@ -1,10 +1,14 @@
 package zhu.moon.guiwu
 
 import com.google.gson.Gson
+
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
+import net.mamoe.mirai.message.data.PlainText
 import zhu.moon.ExpendFeature
 import zhu.moon.Plugin
 import java.io.File
@@ -15,16 +19,17 @@ import java.lang.Exception
  */
 object Guiwu : ExpendFeature() {
     private val bot = Plugin.instanceBot
-    private val guiwuQQ = 1372782994L//1837099861L
-    private val terminatorQQ = 2804240044L
+    private const val guiwuQQ = 1372782994L
 
     private val sgroup = bot.getGroup(829252508L)
-    private val tgroup = bot.getGroup(749249645L)
+    private val tgroup = bot.getGroup(829252508L)
 
     private var msgCnt = 0
     private var lastSenderId: Long = guiwuQQ
 
+    private var recall: Boolean = false
     private var trans: Boolean = true
+    private var maxlen = 100
 
     /**
      * TODO 空文件检查
@@ -40,27 +45,30 @@ object Guiwu : ExpendFeature() {
         val gson = Gson()
         val config = gson.fromJson(configText,GuiwuConfig::class.java) ?: GuiwuConfig( trans = true )
 
+        this.recall = config.recall
         this.trans = config.trans
+        this.maxlen = config.maxlen
+
+        configText = gson.toJson(GuiwuConfig(recall = recall,trans = trans, maxlen = maxlen))
+
+
+        File("./data/guiwu.cnf").writeText(configText)
+
     }
-
-
 
     override fun main(){
         /**
          * 控制指令
          */
         bot.eventChannel.subscribeAlways<GroupMessageEvent> {
-            if (sender.id != Plugin.admin.id) return@subscribeAlways
-
-            val cnf = GuiwuConfig(trans)
-
-            val cmd = message.contentToString()
-
+            if (sender.id != Plugin.adminQQ) return@subscribeAlways
             val gson = Gson()
-            var cnfText = gson.toJson(cnf)
+            var cnfText = File("./data/guiwu.cnf").readText()
+            val cnf = gson.fromJson(cnfText,GuiwuConfig::class.java)
 
-
-            when (cmd){
+            when (message.contentToString()){
+                "关闭撤回" -> cnf.recall = false
+                "开启撤回" -> cnf.recall = true
                 "关闭转发" -> cnf.trans = false
                 "开启转发" -> cnf.trans = true
                 "桂物配置" -> {
@@ -68,6 +76,7 @@ object Guiwu : ExpendFeature() {
                 }
             }
 
+            recall = cnf.recall
             trans = cnf.trans
 
             cnfText = gson.toJson(cnf)
@@ -81,13 +90,14 @@ object Guiwu : ExpendFeature() {
         }
 
         bot.eventChannel.subscribeAlways<GroupMessageEvent> {
+            if (!recall) return@subscribeAlways
             if (sender.id != guiwuQQ ) return@subscribeAlways
             val msg = message.contentToString()
 
             /**
              * 当桂物消息中带回车，即超过一行，一般就是转发的烂活
              */
-            if (msg.contains("\n") || msg.length > 223) {
+            if (msg.contains("\n") || msg.length > maxlen) {
                 try {
                     message.recall()
                 }catch ( p : PermissionDeniedException){
@@ -131,7 +141,17 @@ object Guiwu : ExpendFeature() {
             if (sgroup != null  && tgroup != null) {
                 if (group.id == sgroup.id){
                     if (sender.id == guiwuQQ){
-                        tgroup.sendMessage(message.contentToString())
+                        message.forEach{
+                            if (it is Image) {
+                                //如果消息这一部分是图片
+                                val url = it.queryUrl()
+                                tgroup.sendMessage(url)
+                            }
+                            if (it is PlainText) {
+                                //如果消息这一部分是纯文本
+                                tgroup.sendMessage(it.content)
+                            }
+                        }
                     }
                 }
             }
@@ -141,5 +161,7 @@ object Guiwu : ExpendFeature() {
 }
 
 data class GuiwuConfig(
-    var trans: Boolean = true
+    var recall: Boolean = false,
+    var trans: Boolean = true,
+    var maxlen: Int = 100
 )
