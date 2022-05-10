@@ -3,12 +3,12 @@ package zhu.moon.reply
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import zhu.moon.ExpendFeature
+import zhu.moon.ExpandFeature
 import zhu.moon.Plugin
 import java.io.File
 import java.lang.Exception
 
-object Reply : ExpendFeature(){
+object Reply : ExpandFeature(){
     private val bot = Plugin.instanceBot
     override fun main() {
         bot.eventChannel.subscribeAlways<GroupMessageEvent> {

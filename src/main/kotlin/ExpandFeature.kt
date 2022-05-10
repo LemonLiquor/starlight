@@ -2,8 +2,7 @@ package zhu.moon
 
 import kotlinx.coroutines.launch
 
-abstract class ExpendFeature  {
-    //TODO 一个机器人实例成员变量
+abstract class ExpandFeature  {
 
     abstract  fun main()
 

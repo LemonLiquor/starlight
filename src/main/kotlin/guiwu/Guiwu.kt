@@ -9,7 +9,7 @@ import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import net.mamoe.mirai.message.data.PlainText
-import zhu.moon.ExpendFeature
+import zhu.moon.ExpandFeature
 import zhu.moon.Plugin
 import java.io.File
 import java.lang.Exception
@@ -17,12 +17,12 @@ import java.lang.Exception
 /**
  * 用于撤回群里桂物发言
  */
-object Guiwu : ExpendFeature() {
+object Guiwu : ExpandFeature() {
     private val bot = Plugin.instanceBot
     private const val guiwuQQ = 1372782994L
 
     private val sgroup = bot.getGroup(829252508L)
-    private val tgroup = bot.getGroup(829252508L)
+    private val tgroup = bot.getGroup(749249645L)
 
     private var msgCnt = 0
     private var lastSenderId: Long = guiwuQQ
@@ -61,7 +61,7 @@ object Guiwu : ExpendFeature() {
          * 控制指令
          */
         bot.eventChannel.subscribeAlways<GroupMessageEvent> {
-            if (sender.id != Plugin.adminQQ) return@subscribeAlways
+            if (sender.id != 783960732L) return@subscribeAlways
             val gson = Gson()
             var cnfText = File("./data/guiwu.cnf").readText()
             val cnf = gson.fromJson(cnfText,GuiwuConfig::class.java)
